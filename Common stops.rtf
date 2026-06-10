@@ -1,0 +1,479 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fnil\fcharset0 Menlo-Bold;
+}
+{\colortbl;\red255\green255\blue255;\red224\green224\blue224;\red25\green29\blue39;\red135\green135\blue135;
+\red162\green168\blue247;\red255\green255\blue255;\red45\green56\blue64;\red237\green237\blue237;\red25\green29\blue39;
+\red224\green224\blue224;\red254\green244\blue139;}
+{\*\expandedcolortbl;;\csgenericrgb\c87761\c87761\c87761;\csgenericrgb\c9839\c11388\c15260\c95000;\cssrgb\c60000\c60000\c60000;
+\cssrgb\c69412\c72549\c97647;\cssrgb\c100000\c100000\c100000\c93000;\csgenericrgb\c17530\c21854\c24942;\csgenericrgb\c92857\c92857\c92857;\csgenericrgb\c9839\c11388\c15260;
+\csgenericrgb\c87761\c87761\c87761\c95000;\cssrgb\c99608\c95686\c61176;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+This is a list of common stops where Claude stops and asks to go ahead;\
+You need to find ways to automate them and include them in the project\
+Choose either \
+Write the previous code in a way that avoids the question\
+Or get pre approval so you don\'92t have to stop\
+\
+\
+\
+\
+****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1 \cf2 \cb3 \CocoaLigature0 python3 << 'EOF'\
+   import json, urllib.request, urllib.error\
+\
+   with open('/Users/ashleydsouza/.claude/.credentials.json') as f:                              \
+       data = json.load(f)\
+   token = data['claudeAiOauth']['accessToken']\
+\
+   candidates = [\
+       "https://claude.ai/api/usage",\
+       "https://claude.ai/api/account",\
+       "https://claude.ai/api/organizations/me/usage",\
+       "https://claude.ai/api/auth/current_account",\
+       "https://claude.ai/api/bootstrap",\
+       "https://claude.ai/api/rate_limits",\
+       "https://claude.ai/api/limits",\
+   ]\
+\
+   headers = \{\
+       "Authorization": f"Bearer \{token\}",\
+       "Accept": "application/json",\
+       "User-Agent": "Mozilla/5.0",\
+       "Anthropic-Client-Platform": "claude_ai",\
+   \}\
+\
+   for url in candidates:\
+       try:\
+           req = urllib.request.Request(url, headers=headers)\
+           with urllib.request.urlopen(req, timeout=10) as resp:\
+               body = resp.read(500).decode()\
+               print(f"[\{resp.status\}] \{url\}")\
+               print(f"  \{body[:200]\}\\n")\
+       except urllib.error.HTTPError as e:\
+           body = e.read(200).decode()\
+           print(f"[\{e.code\}] \{url\}  \'97 \{body[:100]\}\\n")\
+       except Exception as e:\
+           print(f"[ERR] \{url\}  \'97 \{e\}\\n")\
+   EOF\
+\
+   \cf4 Probe\cf2  \cf4 candidate\cf2  \cf4 claude.ai\cf2  \cf4 API\cf2  \cf4 endpoints\cf2  \cf4 for\cf2  \cf4 usage\cf2  \cf4 data\cf2 \
+\
+ Contains brace with quote character (expansion obfuscation)\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \
+\
+\
+****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 \cb6 Bash command
+\f1\b0 \cf7 \
+\
+   cd "/Users/ashleydsouza/Documents/Coding_projects/knowledge extractor" && source .venv/bin/activate && python3 -c\
+   "\
+   import anthropic                                                                              \
+   c = anthropic.Anthropic()\
+   r = c.messages.create(model='claude-haiku-4-5-20251001', max_tokens=10, messages=[\{'role':'user','content':'hi'\}])\
+   print(r.content[0].text)\
+   " 2>&1\
+   \cf4 Test\cf7  \cf4 Anthropic\cf7  \cf4 API\cf7  \cf4 connectivity\cf7 \
+\
+ 'source' evaluates arguments as shell code\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\
+\
+****\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 Bash
+\f1\b0 \cf7  
+\f2\b \cf5 command
+\f1\b0 \cf7 \
+\
+   cd "/Users/ashleydsouza/Documents/Coding_projects/knowledge extractor" && source .venv/bin/activate && python3 -c\
+   "\
+   from src.summarizer import summarize\
+   try:\
+       result = summarize('test transcript', '', 'Test Title', 'https://x.com/test', 'twitter', 'test source')\
+       print('Success:', result.get('title'))\
+   except Exception as e:\
+       import traceback\
+       traceback.print_exc()\
+       print('Error:', repr(e))\
+   " 2>&1\
+   \cf4 Test\cf7  \cf4 summarizer\cf7  \cf4 directly\cf7  \cf4 to\cf7  \cf4 see\cf7  \cf4 actual\cf7  \cf4 error\cf7 \
+\
+ 'source' evaluates arguments as shell code\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \
+********\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3  
+\f2\b \cf5 \cb3 Bash command
+\f1\b0 \cf2 \cb3 \
+\
+   find /Applications -name "Claude.app" -maxdepth 3 2>/dev/null; find /Applications -name "*.app" -maxdepth 2 | grep\
+   -i claude 2>/dev/null\
+   \cf4 Find Claude app location\cf2 \
+  \
+ Do you want to proceed?                                                                         \
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  Yes, allow reading from 
+\f2\b \cf8 \cb3 Applications
+\f1\b0 \cf2 \cb3 / from this project\
+   \cf4 3.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+*******\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3 All 403s are Cloudflare bot-challenge pages \'97 not real API 403s, just rate-limiting the Python HTTP client. Claude\
+  Code must use specific headers or a session cookie that bypasses the bot check. Let me look at how Claude Code itself\
+  fetches usage.\
+\
+\cf4 \uc0\u9210 \cf2  Searching for 
+\f2\b \cf8 \cb3 1
+\f1\b0 \cf2 \cb3  pattern, listing 
+\f2\b \cf8 \cb3 1
+\f1\b0 \cf2 \cb3  directory\'85 \cf4 (ctrl+o to expand)\cf2 \
+\cf4   \uc0\u9151   $ which claude && ls -la $(which claude)\cf2 \
+\
+\cf5 \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf2 \
+ 
+\f2\b \cf5 \cb3 Bash command
+\f1\b0 \cf2 \cb3 \
+\
+   which claude && ls -la $(which claude)\
+   \cf4 Find Claude Code CLI location\cf2 \
+\
+ Contains command_substitution                                                                        \
+                                                                                                 \
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 ******\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 try:\
+       r = client.messages.create(\
+           model=model,\
+           max_tokens=100,\
+           messages=[\{'role': 'user', 'content': 'Return JSON: \{\\"test\\": true\}'\}]\
+       )\
+       print('API OK:', r.content[0].text[:50])\
+   except Exception as e:\
+       print('API ERROR:', repr(e))\
+   " 2>&1\
+   \cf4 Debug\cf7  \cf4 summarizer\cf7  \cf4 tier\cf7  \cf4 and\cf7  \cf4 API\cf7 \
+\
+ 'source' evaluates arguments as shell code\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 *******\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3  which -a claude 2>/dev/null; ls ~/.npm/bin/claude 2>/dev/null; ls /usr/local/bin/claude 2>/dev/null; ls\
+   ~/.local/bin/claude 2>/dev/null; npm root -g 2>/dev/null | head -1\
+   \cf4 Find Claude Code binary path\cf2 \
+   \
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1. \cf5 Yes\cf2 \
+   \cf4 2.\cf2  Yes, and don\'92t ask again for: npm root *\
+   \cf4 3.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+\
+****\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3 for url in candidates:\
+       for hset in headers_sets:\
+           try:\
+               req = urllib.request.Request(url, headers=hset)\
+               with urllib.request.urlopen(req, timeout=10) as resp:\
+                   body = resp.read(1000).decode()\
+                   print(f"[\{resp.status\}] \{url\}")\
+                   print(f"  Headers used: \{list(hset.keys())\}")\
+                   print(f"  Body: \{body[:400]\}\\n")\
+                   break\
+           except urllib.error.HTTPError as e:\
+               body = e.read(300).decode()\
+               print(f"[\{e.code\}] \{url\}")\
+               print(f"  Body: \{body[:150]\}\\n")\
+               break\
+           except Exception as e:\
+               print(f"[ERR] \{url\} \'97 \{e\}\\n")\
+               break\
+   EOF\
+\
+   \cf4 Probe\cf2  \cf4 the\cf2  \cf4 two\cf2  \cf4 strong\cf2  \cf4 candidate\cf2  \cf4 endpoints\cf2  \cf4 found\cf2  \cf4 in\cf2  \cf4 the\cf2  \cf4 binary\cf2 \
+\
+ Contains brace with quote character (expansion obfuscation)\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+***\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 \cb3 Bash command
+\f1\b0 \cf2 \cb3 \
+  \
+   TOKEN=$(python3 -c "import json; d=json.load(open('/Users/ashleydsouza/.claude/.credentials.json'));\
+   print(d['claudeAiOauth']['accessToken'])")\
+\
+   for endpoint in "/api/claude_code/policy_limits" "/api/oauth/usage"; do                       \
+     echo "=== $endpoint ==="\
+     curl -sS --max-time 10 \\\
+       -H "Authorization: Bearer $TOKEN" \\\
+       -H "Accept: application/json" \\\
+       -H "anthropic-client-platform: claude_cli" \\\
+       -H "anthropic-version: 2023-06-01" \\\
+       "https://claude.ai$endpoint" | head -c 500\
+     echo ""\
+   done\
+   \cf4 Probe\cf2  \cf4 endpoints\cf2  \cf4 with\cf2  \cf4 curl\cf2  \cf4 (better\cf2  \cf4 TLS\cf2  \cf4 fingerprint)\cf2 \
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+  \cf4 2.\cf2 Yes, and don\'92t ask again: curl -sS --max-time 10 -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Accept:\
+    for                     application/json' -H 'anthropic-client-platform: claude_cli' -H 'anthropic-version:\
+                            2023-06-01' https://claude.ai__TRACKED_VAR__\
+   \cf4 3.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+*****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 Bash command
+\f1\b0 \cf7 \
+  \
+   python3 -c "\
+   import os\
+   vault = '/Users/ashleydsouza/Library/Mobile Documents/iCloud~md~obsidian/Documents/ai-knowledge-vault'\
+  \
+   # Check for any note files with 'note' or 'message' in filename\
+   for root, dirs, files in os.walk(vault):\
+       dirs[:] = [d for d in dirs if not d.startswith('.')]\
+       for fname in files:\
+           fl = fname.lower()\
+           if any(kw in fl for kw in ['note-for', 'note-to', 'message-for', 'message-to', 'todo', 'reminder']):\
+               rel = os.path.relpath(os.path.join(root, fname), vault)\
+               print(rel)\
+   " 2>&1\
+   \cf4 Check\cf7  \cf4 for\cf7  \cf4 note-addressed\cf7  \cf4 files\cf7  \cf4 by\cf7  \cf4 filename\cf7 \
+\
+ Newline followed by # inside a quoted argument can hide arguments from path validation\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 *****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3  
+\f2\b \cf5 \cb3 Bash command
+\f1\b0 \cf2 \cb3 \
+  \
+   # Try with HTTP/2 explicit and a proper browser-like fingerprint via curl\
+   TOKEN=$(python3 -c "import json; d=json.load(open('/Users/ashleydsouza/.claude/.credentials.json'));\
+   print(d['claudeAiOauth']['accessToken'])")\
+  \
+   curl -sS --max-time 10 --http2 \\\
+     -H "Authorization: Bearer $TOKEN" \\\
+     -H "Accept: application/json" \\\
+     -H "anthropic-client-platform: claude_cli" \\\
+     -H "User-Agent: claude-cli/2.1.162 darwin/arm64" \\\
+     -w "\\n---HTTP STATUS: %\{http_code\}---\\n" \\\
+     "https://claude.ai/api/claude_code/policy_limits" | tail -20\
+   \cf4 Try\cf2  \cf4 HTTP/2\cf2  \cf4 with\cf2  \cf4 claude-cli\cf2  \cf4 User-Agent\cf2 \
+\
+ Do you want to proceed?\
+   \cf4 1.\cf2  Yes\
+ \cf5 \uc0\u10095 \cf2  \cf4 2. \cf5 Yes, and don\'92t ask again for: \cf2 curl -sS --max-time 10 --http2 -H 'Authorization: Bearer __TRACKED_VAR__' -H\
+                                    'Accept: application/json' -H 'anthropic-client-platform: claude_cli' -H\
+                                    'User-Agent: claude-cli/2.1.162 darwin/arm64' -w '\\n---HTTP STATUS:\
+                                    %\{http_code\}---\\n' https://claude.ai/api/claude_code/policy_limits\cf9 \cb10  \cf2 \cb3 \
+   \cf4 3.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+***\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 Bash command
+\f1\b0 \cf7 \
+  \
+   python3 -c "\
+   import os\
+   obsidian_base = '/Users/ashleydsouza/Library/Mobile Documents/iCloud~md~obsidian/Documents'\
+   # List all vaults                                                                             \
+   for item in sorted(os.listdir(obsidian_base)):\
+       p = os.path.join(obsidian_base, item)\
+       if os.path.isdir(p):\
+           print(f'Vault: \{item\}')\
+   " 2>&1\
+   \cf4 List\cf7  \cf4 all\cf7  \cf4 Obsidian\cf7  \cf4 vaults\cf7 \
+\
+ Newline followed by # inside a quoted argument can hide arguments from path validation\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 ****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b \cf5 \cb3 Bash command
+\f1\b0 \cf2 \cb3 \
+  \
+   TOKEN=$(python3 -c "import json; d=json.load(open('/Users/ashleydsouza/.claude/.credentials.json'));\
+   print(d['claudeAiOauth']['accessToken'])")\
+\
+   bun -e "\
+   const token = process.env.TOKEN;\
+   const resp = await fetch('https://claude.ai/api/claude_code/policy_limits', \{\
+     headers: \{\
+       'Authorization': 'Bearer ' + token,\
+       'Accept': 'application/json',\
+       'anthropic-client-platform': 'claude_cli',\
+       'anthropic-version': '2023-06-01',\
+     \}\
+   \});\
+   console.log('Status:', resp.status);\
+   const text = await resp.text();\
+   console.log(text.slice(0, 800));\
+   " TOKEN="$TOKEN"\
+   \cf4 Probe\cf2  \cf4 /api/claude_code/policy_limits\cf2  \cf4 via\cf2  \cf4 Bun\cf2  \cf4 fetch\cf2 \
+\
+ Contains shell syntax (string) that cannot be statically analyzed\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 *****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7         except:\
+               pass\
+\
+   seen = set()\
+   for rel, lineno, line, ctx in results:\
+       key = (rel, lineno)\
+       if key not in seen:\
+           seen.add(key)\
+           print(f'=== \{rel\} (line \{lineno\}) ===')\
+           print(f'Trigger: \{line[:100]\}')\
+           print(ctx)\
+           print()\
+   " 2>&1\
+   \cf4 Final\cf7  \cf4 targeted\cf7  \cf4 search\cf7  \cf4 for\cf7  \cf4 direct\cf7  \cf4 notes\cf7  \cf4 to\cf7  \cf4 Claude\cf7  \cf4 or\cf7  \cf4 gbrain\cf7 \
+\
+ Newline followed by # inside a quoted argument can hide arguments from path validation\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 ****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\b\fs22 \cf5 \cb11 Bash command
+\f1\b0 \cf0 \
+\
+   ls /Users/ashleydsouza/Documents/Coding_projects/potential\\ new\\\
+   projects/autoresearch/autoresearch/\
+   \cf4 List files in nested autoresearch folder\cf0                    \
+                                                         \
+ Contains backslash-escaped whitespace\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf0  \cf4 1.\cf0  \cf5 Yes\cf0 \
+   \cf4 2.\cf0  No\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs24 \cf7 \cb6 *******\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 \cb3 for (const t of tests) \{\
+     const resp = await fetch('https://claude.ai/api/claude_code/policy_limits', \{ headers: t.headers \});\
+     const text = await resp.text();\
+     console.log(t.label + ' -> ' + resp.status + ': ' + text.slice(0, 150));\
+   \}\
+   " TOKEN="$TOKEN"\
+   \cf4 Try\cf2  \cf4 OAuth\cf2  \cf4 token\cf2  \cf4 as\cf2  \cf4 cookie\cf2  \cf4 vs\cf2  \cf4 Bearer\cf2  \cf4 header\cf2 \
+\
+ Contains shell syntax (string) that cannot be statically analyzed\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf2  \cf4 1.\cf2  \cf5 Yes\cf2 \
+   \cf4 2.\cf2  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \cb6 \
+****\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7   python3 -c "\
+   import os\
+   # Check if iSwarm project has any notes\
+   iswarm_path = '/Users/ashleydsouza/Documents/Coding_projects/iSwarm'                          \
+   if os.path.exists(iswarm_path):\
+       for root, dirs, files in os.walk(iswarm_path):\
+           dirs[:] = [d for d in dirs if not d.startswith('.')]\
+           for f in files[:20]:\
+               print(os.path.relpath(os.path.join(root, f), iswarm_path))\
+   else:\
+       print('iSwarm path not found')\
+   " 2>&1 | head -30\
+   \cf4 Check\cf7  \cf4 iSwarm\cf7  \cf4 project\cf7  \cf4 files\cf7 \
+\
+ Newline followed by # inside a quoted argument can hide arguments from path validation\
+\
+ Do you want to proceed?\
+ \cf5 \uc0\u10095 \cf7  \cf4 1.\cf7  \cf5 Yes\cf7 \
+   \cf4 2.\cf7  No\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf7 \
+****\
+\
+\
+\
+\
+}
